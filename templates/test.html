@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<title>Test App</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<body>
+
+    <header class="w3-container w3-teal">
+        <h1>Flask Example</h1>
+    </header>
+
+    <div style="margin: auto; width: 60%; padding-top:10px">
+        <div class="w3-container w3-margin-top">
+
+            <form action="{{ url_for('addStudent') }}" method="post" class="w3-container w3-card-4">
+
+                <p>
+                    <input class="w3-input" type="text" name="firstname" required>
+                    <label>First Name</label>
+                </p>
+                <p>
+                    <input class="w3-input" type="text" name="lastname" required>
+                    <label>Last Name</label>
+                </p>
+                <input class="w3-input" type="text" name="department" required>
+                <label>Department</label></p>
+
+                <p>
+                    <button class="w3-button w3-section w3-teal w3-ripple"> Submit </button>
+                </p>
+
+            </form>
+
+        </div>
+    </div>
+
+    <div style="margin: auto; width: 60%; padding-top:20px">
+        <div class="w3-container">
+            <h2>Student List</h2>
+            <ul class="w3-ul w3-card-4">
+                {% for item in data %}
+                <li class="w3-bar">
+                    <span class="w3-white w3-right">
+                        <form action="{{ url_for('deleteStudent') }}" method="post">
+                            <input type="hidden" value="{{item[0]}}" name="id" />
+                            <input class="w3-button w3-section w3-teal w3-ripple" type="submit" value="Remove"/>
+                        </form>
+                    </span>
+                    <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" class="w3-bar-item w3-circle w3-hide-small" style="width:85px">
+                    <div class="w3-bar-item">
+                        <span class="w3-large">{{item[1]}} {{item[2]}}</span><br>
+                        <span>{{item[3]}}</span>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</body>
+
+</html>
