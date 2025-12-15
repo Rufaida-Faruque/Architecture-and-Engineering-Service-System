@@ -20,7 +20,7 @@ const LoginPage = () => {
       alert('Login successful!');
       localStorage.setItem('userId', data.id);
       localStorage.setItem('role', data.role);
-      window.location.href = '/dashboard';  // Redirect to dashboard or home
+      window.location.href = '/welcome';  // Redirect to dashboard or home
     } else {
       setError(data.message);
     }
@@ -47,6 +47,9 @@ const LoginPage = () => {
         <button type="submit">Login</button>
       </form>
       {error && <p>{error}</p>}
+
+
+      <p>Don't have an account? <a href="/register">Register here</a></p>
     </div>
   );
 };
