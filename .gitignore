@@ -1,12 +1,12 @@
-# Dependencies
-node_modules/
-*.log
-.env
+# # Dependencies
+# node_modules/
+# *.log
+# .env
 
-# Frontend build
-frontend/build/
-frontend/node_modules/
+# # Frontend build
+# frontend/build/
+# frontend/node_modules/
 
-# Backend build
-backend/node_modules/
-frontend.zip
+# # Backend build
+# backend/node_modules/
+
