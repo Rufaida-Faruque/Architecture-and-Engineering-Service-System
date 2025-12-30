@@ -10,9 +10,9 @@ export default function ClientDashboard() {
   const [queries, setQueries] = useState([]);
   const [posts, setPosts] = useState([]);
   const [bids, setBids] = useState([]);
-  const [calendar, setCalendar] = useState([]);   // ✅ ADDED HERE
+
   const [loading, setLoading] = useState(true);
-const [isCalendarConnected, setIsCalendarConnected] = useState(false);
+
 
 
   const userId =
