@@ -5,3 +5,5 @@ const nextConfig = {
 };
 
 export default nextConfig;
+next.config.mjs
+
