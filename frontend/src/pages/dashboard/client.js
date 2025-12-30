@@ -87,13 +87,7 @@ export default function ClientDashboard() {
     <div style={{ padding: 25 }}>
       <h1>Client Dashboard</h1>
 
-      {/* GOOGLE CALENDAR CONNECT BUTTON */}
-      <button
-        onClick={() => (window.location.href = "/api/google/auth")}
-        style={btn}
-      >
-        Connect Google Calendar
-      </button>
+
 
       {/* --------------- REPOSITORIES --------------- */}
       <section style={section}>
