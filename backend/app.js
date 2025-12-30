@@ -1,24 +1,62 @@
 
-const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors');
-require('dotenv').config();
+import express from 'express';
+import dotenv from 'dotenv';
+import mongoose from 'mongoose';
+import cors from 'cors';
+import path from "path";
+import { fileURLToPath } from "url";
 
-console.log('MONGODB_URI exists:', !!process.env.MONGODB_URI);
-console.log('MONGODB_URI first 20 chars:', process.env.MONGODB_URI?.substring(0, 20));
+import authRoutes from './routes/auth.js';
+import repoRoutes from './routes/repository.js';
+import usersRoutes from './routes/users.js';
 
+dotenv.config();
 
 const app = express();
+
+// Fix ES module path usage
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Middlewares
 app.use(cors());
 app.use(express.json());
 
-mongoose.connect(process.env.MONGODB_URI)
-  .then(() => console.log('✅ MongoDB Atlas connected'))
-  .catch((err) => console.error('❌ MongoDB connection error:', err.message))
-  .finally(() => {
-    console.log('🚀 Starting server...');
-    const PORT = process.env.PORT || 4000;
-    app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
-    });
-  });
+// MongoDB Connection
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log("MongoDB connected"))
+  .catch(err => console.log("MongoDB connection error:", err));
+
+// Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/repositories', repoRoutes);
+app.use('/api/users', usersRoutes);
+
+// Serve uploaded files
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
+
+
+import postsRouter from "./routes/posts.js";
+import bidSessionsRouter from "./routes/bidSessions.js";
+
+app.use("/api/posts", postsRouter);
+app.use("/api/bidSessions", bidSessionsRouter);
+
+
+import googleAuth from "./routes/google.js";
+app.use("/api/google", googleAuth);
+
+
+
+
+
+
+
+
+
+
