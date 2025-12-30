@@ -393,85 +393,21 @@ router.delete("/:sessionId", async (req, res) => {
 });
 
 
-// // SELECT WINNER (no auth) - also should be protected
-// router.put("/:sessionId/select-winner", async (req, res) => {
-//   try {
-//     const { winnerId, clientId } = req.body;
-
-//     if (!clientId || !winnerId) {
-//       return res.status(400).json({ message: "clientId and winnerId are required" });
-//     }
-
-//     const session = await BidSession.findById(req.params.sessionId);
-//     if (!session) return res.status(404).json({ message: "Bid session not found" });
-
-//     if (session.client.toString() !== clientId.toString()) {
-//       return res.status(403).json({ message: "Unauthorized. Only owner client can select winner" });
-//     }
-
-//     if (session.status !== "closed") {
-//       return res.status(400).json({ message: "Session must be closed to select a winner" });
-//     }
-
-//     const exists = session.bids.find(b => b.sp.toString() === winnerId.toString());
-//     if (!exists) return res.status(400).json({ message: "Invalid winner selection" });
-
-//     session.winner = winnerId;
-//     await session.save();
-
-//     res.status(200).json({ message: "Winner selected successfully", session });
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).json({ message: "Server error" });
-//   }
-// });
 
 
 
 
-// // Route to select a winner (only after the session is closed)
-// router.put("/:sessionId/select-winner", async (req, res) => {
-//   try {
-//     const { winnerId, clientId } = req.body; // The ID of the selected winner and the clientId
 
-//     const session = await BidSession.findById(req.params.sessionId);
 
-//     if (!session) {
-//       return res.status(404).json({ message: "Bid session not found" });
-//     }
 
-//     // Ensure the session is closed before selecting a winner
-//     if (session.status !== "closed") {
-//       return res.status(400).json({ message: "Session must be closed to select a winner" });
-//     }
 
-//     // Ensure that the winner can only be selected once and cannot be changed after that
-//     if (session.winner) {
-//       return res.status(400).json({ message: "Winner has already been selected. It cannot be changed." });
-//     }
-
-//     // Find the selected winner and check if the winner exists
-//     const winner = session.bids.find(bid => bid.sp.toString() === winnerId);
-//     if (!winner) {
-//       return res.status(400).json({ message: "Invalid winner selection" });
-//     }
-
-//     // Set the winner in the session
-//     session.winner = winnerId;
-//     await session.save();
-
-//     res.status(200).json({ message: "Winner selected successfully", session });
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).json({ message: "Server error" });
-//   }
-// });
 
 // Route to select a winner (only after the session is closed)
 router.put("/:sessionId/select-winner", async (req, res) => {
   try {
-    const { winnerId, clientId } = req.body; // The ID of the selected winner and the clientId
+    const { winnerId } = req.body; // Only pass the winnerId
 
+    // Find the session
     const session = await BidSession.findById(req.params.sessionId);
 
     if (!session) {
@@ -498,7 +434,7 @@ router.put("/:sessionId/select-winner", async (req, res) => {
     session.winner = winnerId;
     await session.save();
 
-    // Populate the session with the winner's email
+    // Populate the session with the winner's email and client email
     const populatedSession = await BidSession.findById(req.params.sessionId)
       .populate("winner", "email") // Populate the winner's email
       .populate("client", "email");
@@ -610,6 +546,32 @@ router.post("/:sessionId/bid", async (req, res) => {
 
 
 
+// Add this new route to your `bidSessions.js` routes file
+
+router.put("/:sessionId/timeroff", async (req, res) => {
+  try {
+    // Find the bid session by ID
+    const session = await BidSession.findById(req.params.sessionId);
+
+    if (!session) {
+      return res.status(404).json({ message: "Bid session not found" });
+    }
+
+    // If the session is already closed, no need to change anything
+    if (session.status === "closed") {
+      return res.status(400).json({ message: "This session is already closed" });
+    }
+
+    // Change the status to closed
+    session.status = "closed";
+    await session.save();
+
+    res.status(200).json({ message: "Bid session automatically closed due to timer" });
+  } catch (err) {
+    console.error("Error closing session:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
 
 
 

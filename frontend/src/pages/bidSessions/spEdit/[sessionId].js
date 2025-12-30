@@ -1139,7 +1139,7 @@ export default function ServiceProviderEditSession() {
             if (remainingTime <= 0) {
               clearInterval(interval);
               setTimer("Session has ended");
-              // Optionally close the session automatically if timer ends
+              
               closeSessionAutomatically();
             } else {
               const hours = Math.floor(remainingTime / (1000 * 60 * 60));
@@ -1160,18 +1160,25 @@ export default function ServiceProviderEditSession() {
     fetchSessionDetails();
   }, [sessionId]);
 
-  const closeSessionAutomatically = async () => {
-    try {
-      setLoading(true);
-      await axios.put(`http://localhost:5000/api/bidSessions/${sessionId}/close`);
-      setSession((prevSession) => ({ ...prevSession, status: "closed" }));
-      alert("Session closed automatically due to timer.");
-    } catch (err) {
-      setError("Failed to close the session");
-    } finally {
-      setLoading(false);
-    }
-  };
+const closeSessionAutomatically = async () => {
+  try {
+    setLoading(true);
+    
+    // Trigger the new timeroff route to close the session once the timer ends
+    await axios.put(`http://localhost:5000/api/bidSessions/${sessionId}/timeroff`);
+    
+    // Update local session state to reflect the closed status
+    // setSession((prevSession) => ({ ...prevSession, status: "closed" }));
+    
+    alert("Session closed automatically due to timer.");
+    window.location.reload();
+  } catch (err) {
+    setError("Failed to close the session");
+    console.error(err);  // Log the error for better debugging
+  } finally {
+    setLoading(false);
+  }
+};
 
   // Place bid logic
   const handlePlaceBid = async (e) => {

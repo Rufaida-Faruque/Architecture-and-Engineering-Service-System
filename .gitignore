@@ -10,3 +10,4 @@
 # # Backend build
 # backend/node_modules/
 
+.vercel
