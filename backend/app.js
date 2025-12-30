@@ -48,12 +48,6 @@ app.use("/api/posts", postsRouter);
 app.use("/api/bidSessions", bidSessionsRouter);
 
 
-import googleAuth from "./routes/google.js";
-app.use("/api/google", googleAuth);
-
-
-
-
 
 
 
