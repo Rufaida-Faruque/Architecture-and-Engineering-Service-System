@@ -32,8 +32,8 @@ app.use('/api/auth', authRoutes);
 app.use('/api/repositories', repoRoutes);
 app.use('/api/users', usersRoutes);
 
-// Serve uploaded files
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+// // Serve uploaded files
+// app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
