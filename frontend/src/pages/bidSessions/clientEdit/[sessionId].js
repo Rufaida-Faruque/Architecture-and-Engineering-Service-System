@@ -1,8 +1,16 @@
 
 
+
+
+
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useRouter } from "next/router";
+import { CohereClient } from 'cohere-ai';
+
+// Initialize Cohere client with API key (ensure the key is stored securely)
+const API_KEY = process.env.NEXT_PUBLIC_COHERE_API_KEY;  // Make sure to store your API key in environment variables
+const cohere = new CohereClient({ token: API_KEY });
 
 export default function ClientEditSession() {
   const router = useRouter();
@@ -14,13 +22,15 @@ export default function ClientEditSession() {
   const [selectedWinner, setSelectedWinner] = useState("");
   const [timeRemaining, setTimeRemaining] = useState(null); // To hold remaining time for countdown
   const [winnerEmail, setWinnerEmail] = useState(""); // Store winner's email
+  const [recommendation, setRecommendation] = useState(""); // Store generated recommendation text
+
   // Fetch session data when the page is loaded
   useEffect(() => {
     if (!sessionId) return;
 
     async function fetchSessionDetails() {
       try {
-        const res = await axios.get(`http://localhost:5000/api/bidSessions/${sessionId}`);
+        const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/bidSessions/${sessionId}`);
         setSession(res.data);
       } catch (err) {
         setError("Failed to load session details.");
@@ -28,7 +38,6 @@ export default function ClientEditSession() {
         setLoading(false);
       }
     }
-
     fetchSessionDetails();
   }, [sessionId]);
 
@@ -58,35 +67,20 @@ export default function ClientEditSession() {
     }
   }, [session]);
 
-
-
-
-
-
-
-  
- useEffect(() => {
+  useEffect(() => {
     if (session && session.winner) {
       async function fetchWinnerEmail() {
         try {
-          const response = await fetch(`http://localhost:5000/api/users/find-by-id?userId=${session.winner}`);
+          const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/find-by-id?userId=${session.winner}`);
           const data = await response.json();
           setWinnerEmail(data.email); // Store the winner's email
         } catch (err) {
           setError("Failed to fetch winner's email.");
         }
       }
-
       fetchWinnerEmail();
     }
   }, [session]);
-
-
-
-
-
-
-
 
   // Close session
   const handleCloseSession = async () => {
@@ -98,7 +92,7 @@ export default function ClientEditSession() {
     try {
       setLoading(true);
       await axios.put(
-        `http://localhost:5000/api/bidSessions/${sessionId}/close`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/bidSessions/${sessionId}/close`,
         { clientId: localStorage.getItem("userId") } // Pass clientId from localStorage
       );
       setSession((prevSession) => ({ ...prevSession, status: "closed" })); // Update local state
@@ -111,49 +105,60 @@ export default function ClientEditSession() {
     }
   };
 
-//   // Delete session
-//   const handleDeleteSession = async () => {
-//     if (session.status === "closed") {
-//       alert("You cannot delete a closed session.");
-//       return;
-//     }
 
-//     try {
-//       setLoading(true);
-      
-//       await axios.delete(`http://localhost:5000/api/bidSessions/${sessionId}`, 
-//         { clientId: localStorage.getItem("userId") });
-//       alert("Session deleted successfully");
-//       router.push("/bidSessions"); // Redirect back to the sessions list
-//     } catch (err) {
-//       setError("Failed to delete the session");
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-const handleDeleteSession = async () => {
-  if (session.status === "closed") {
-    alert("You cannot delete a closed session.");
+
+
+
+
+
+
+
+
+
+
+
+  // Function to generate recommendation based on bids using Cohere API
+const generateRecommendation = async () => {
+  if (session.status !== "closed" || session.bids.length === 0) {
+    setRecommendation("No bids available or session is not closed yet.");
     return;
   }
 
+  // Construct the payload with session and bid details
+  const payload = {
+    session: {
+      title: session.title,
+      description: session.description,
+      amount: session.amount,
+      bids: session.bids.map(bid => ({
+        sp: {
+          _id: bid.sp._id,
+          email: bid.sp.email
+        },
+        amount: bid.amount,
+        statement: bid.statement
+      }))
+    }
+  };
+
+  // Stringify the payload object to pass it as a string
+  const stringifiedPayload = JSON.stringify(payload, null, 2); // Pretty print with 2 spaces
+
+  // Prepare the text prompt to send to Cohere API
+  const prompt = `Based on the bids and repository numbers, recommend the best SP(Considering the amount given 
+  by the client is their budget and the amound bid by the SP are what they are asking for to complete the task. The client can
+  go over the budget a little bit. So give one recommendation on best value and another based on lowest) and explain in short
+  from the following offers:
+    ${stringifiedPayload}`;
+
   try {
-    setLoading(true);
-
-    // Using URL query to pass clientId
-    await axios.delete(
-      `http://localhost:5000/api/bidSessions/${sessionId}`,
-      {
-        data: { clientId: localStorage.getItem("userId") } // Pass clientId in the request body
-      }
-    );
-
-    alert("Session deleted successfully");
-    router.push("/bidSessions"); // Redirect back to the sessions list
-  } catch (err) {
-    setError("Failed to delete the session");
-  } finally {
-    setLoading(false);
+    // Call Cohere API to generate the recommendation
+    const response = await fetchCohereRecommendation(prompt);
+    setRecommendation(response);  // Set recommendation in the state
+  } catch (error) {
+    // Handle error if the API call fails
+    console.error('Error with Cohere API:', error);
+    setRecommendation("Error generating recommendation.");
   }
 };
 
@@ -161,27 +166,73 @@ const handleDeleteSession = async () => {
 
 
 
-const handleSelectWinner = async (winnerId) => {
-  try {
-    setLoading(true);
-    const response = await axios.put(
-      `http://localhost:5000/api/bidSessions/${sessionId}/select-winner`,
-      { winnerId }
-    );
 
-    // Assuming response contains populated session with winner's email
-    const winnerEmail = response.data.session.winner.email; // Get the winner's email from the response
 
-    setSelectedWinner(winnerId);
-    alert(`Winner selected successfully! Winner: ${winnerEmail}`);
-    window.location.reload();
-  } catch (err) {
-    setError("Failed to select a winner");
-  } finally {
-    setLoading(false);
-  }
-};
 
+
+
+
+
+
+
+  // Function to interact with Cohere API
+  const fetchCohereRecommendation = async (prompt) => {
+    try {
+      const result = await cohere.chat({
+        message: prompt,
+        model: 'command-r-08-2024', // Cohere's model
+      });
+      return result.text;  // Return the generated recommendation text
+    } catch (error) {
+      console.error('Error calling Cohere API:', error);
+      throw new Error("Failed to generate recommendation with Cohere");
+    }
+  };
+
+  // Delete session
+  const handleDeleteSession = async () => {
+    if (session.status === "closed") {
+      alert("You cannot delete a closed session.");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      await axios.delete(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/bidSessions/${sessionId}`,
+        {
+          data: { clientId: localStorage.getItem("userId") } // Pass clientId in the request body
+        }
+      );
+
+      alert("Session deleted successfully");
+      router.push("/bidSessions"); // Redirect back to the sessions list
+    } catch (err) {
+      setError("Failed to delete the session");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSelectWinner = async (winnerId) => {
+    try {
+      setLoading(true);
+      const response = await axios.put(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/bidSessions/${sessionId}/select-winner`,
+        { winnerId }
+      );
+
+      const winnerEmail = response.data.session.winner.email; // Get the winner's email from the response
+
+      setSelectedWinner(winnerId);
+      alert(`Winner selected successfully! Winner: ${winnerEmail}`);
+      window.location.reload();
+    } catch (err) {
+      setError("Failed to select a winner");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   if (loading) return <h2>Loading session details...</h2>;
   if (error) return <h2>{error}</h2>;
@@ -218,6 +269,19 @@ const handleSelectWinner = async (winnerId) => {
           ))}
         </tbody>
       </table>
+
+      {/* Get Recommendation Button */}
+      {session.status === "closed" && !session.winner && session.bids.length > 0 && (
+        <button onClick={generateRecommendation}>Get Recommendation</button>
+      )}
+
+      {/* Show Recommendation */}
+      {recommendation && (
+        <div>
+          <h3>Recommendation:</h3>
+          <p>{recommendation}</p>
+        </div>
+      )}
 
       {/* Close Session Button */}
       {session.status === "open" && (

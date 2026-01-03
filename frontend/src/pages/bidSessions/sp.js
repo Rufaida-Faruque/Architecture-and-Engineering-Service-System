@@ -3,65 +3,6 @@
 
 
 
-
-
-// import { useState, useEffect } from "react";
-// import axios from "axios";
-// import { useRouter } from "next/router";
-
-// export default function ServiceProviderDashboard() {
-//   const router = useRouter();
-
-//   const [sessions, setSessions] = useState([]);
-//   const [loading, setLoading] = useState(true);
-//   const [error, setError] = useState("");
-
-//   useEffect(() => {
-//     async function fetchSessions() {
-//       try {
-//         const res = await axios.get(`http://localhost:5000/api/bidSessions/open`);
-//         setSessions(res.data);
-//       } catch (err) {
-//         setError("Failed to load open sessions");
-//       } finally {
-//         setLoading(false);
-//       }
-//     }
-
-//     fetchSessions();
-//   }, []);
-
-//   if (loading) return <h2>Loading open sessions...</h2>;
-//   if (error) return <h2>{error}</h2>;
-
-//   return (
-//     <div>
-//       <h1>Open Bid Sessions</h1>
-//       {sessions.length === 0 ? (
-//         <p>No open bid sessions available.</p>
-//       ) : (
-//         <ul>
-//           {sessions.map((session) => (
-//             <li key={session._id}>
-//               <h3>{session.title}</h3>
-//               <p>{session.description}</p>
-//               <p>Status: {session.status}</p>
-//               <button onClick={() => router.push(`/bidSessions/spEdit/${session._id}`)}>
-//                 View Session Details
-//               </button>
-//             </li>
-//           ))}
-//         </ul>
-//       )}
-//     </div>
-//   );
-// }
-
-
-
-
-
-
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useRouter } from "next/router";
@@ -89,11 +30,11 @@ export default function ServiceProviderDashboard() {
         setLoading(true);
 
         // Fetch open sessions (SP has not participated in these sessions yet)
-        const resOpen = await axios.get("http://localhost:5000/api/bidSessions/open");
+        const resOpen = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/bidSessions/open`);
 
         // Fetch participated sessions (SP has placed bids in these sessions)
         const resParticipated = await axios.get(
-          `http://localhost:5000/api/bidSessions/sp/${spId}`
+          `${process.env.NEXT_PUBLIC_API_URL}/api/bidSessions/sp/${spId}`
         );
 
         setOpenSessions(resOpen.data);

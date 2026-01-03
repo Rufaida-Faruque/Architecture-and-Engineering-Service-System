@@ -24,12 +24,12 @@ export default function Repositories() {
 
       if (role === "sp") {
         // Service Provider → repositories they created or collaborate in
-        res = await axios.get("http://localhost:5000/api/repositories/by-sp", {
+        res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/repositories/by-sp`, {
           params: { userId: id }
         });
       } else if (role === "cl") {
         // Client → repositories they are part of
-        res = await axios.get("http://localhost:5000/api/repositories/by-client", {
+        res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/repositories/by-client`, {
           params: { userId: id }
         });
       }

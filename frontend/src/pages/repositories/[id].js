@@ -28,7 +28,7 @@ export default function RepoView() {
   async function loadRepo() {
     setLoading(true);
     try {
-      const res = await axios.get(`http://localhost:5000/api/repositories/${id}`);
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/repositories/${id}`);
       setRepo(res.data.repo);
     } catch (err) {
       console.error(err);
@@ -54,7 +54,7 @@ export default function RepoView() {
   async function addTask(section) {
     if (!taskText.trim()) return alert("Enter a task");
     try {
-      await axios.post(`http://localhost:5000/api/repositories/${id}/checklist/add`, {
+      await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/repositories/${id}/checklist/add`, {
         userId,
         task: taskText,
         section
@@ -68,7 +68,7 @@ export default function RepoView() {
 
   async function moveTask(task, from, to) {
     try {
-      await axios.patch(`http://localhost:5000/api/repositories/${id}/checklist/move`, {
+      await axios.patch(`${process.env.NEXT_PUBLIC_API_URL}/api/repositories/${id}/checklist/move`, {
         userId,
         task,
         from,
@@ -82,7 +82,7 @@ export default function RepoView() {
 
   async function removeTask(task, section) {
     try {
-      await axios.delete(`http://localhost:5000/api/repositories/${id}/checklist/remove`, {
+      await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/repositories/${id}/checklist/remove`, {
         data: { userId, task, section }
       });
       loadRepo();
@@ -95,7 +95,7 @@ export default function RepoView() {
   async function addClient() {
     if (!clientEmail.trim()) return alert("Enter email");
     try {
-      await axios.patch(`http://localhost:5000/api/repositories/${id}/add-client`, {
+      await axios.patch(`${process.env.NEXT_PUBLIC_API_URL}/api/repositories/${id}/add-client`, {
         userId,
         email: clientEmail
       });
@@ -109,7 +109,7 @@ export default function RepoView() {
   async function removeClient(clientId) {
     if (!confirm("Remove client?")) return;
     try {
-      await axios.patch(`http://localhost:5000/api/repositories/${id}/remove-client`, {
+      await axios.patch(`${process.env.NEXT_PUBLIC_API_URL}/api/repositories/${id}/remove-client`, {
         userId,
         clientId
       });
@@ -122,7 +122,7 @@ export default function RepoView() {
   async function addCollaborator() {
     if (!collabEmail.trim()) return alert("Enter email");
     try {
-      await axios.patch(`http://localhost:5000/api/repositories/${id}/add-collaborator`, {
+      await axios.patch(`${process.env.NEXT_PUBLIC_API_URL}/api/repositories/${id}/add-collaborator`, {
         userId,
         email: collabEmail
       });
@@ -136,7 +136,7 @@ export default function RepoView() {
   async function removeCollaborator(collabId) {
     if (!confirm("Remove collaborator?")) return;
     try {
-      await axios.patch(`http://localhost:5000/api/repositories/${id}/remove-collaborator`, {
+      await axios.patch(`${process.env.NEXT_PUBLIC_API_URL}/api/repositories/${id}/remove-collaborator`, {
         userId,
         collaboratorId: collabId
       });
@@ -151,7 +151,7 @@ export default function RepoView() {
 
     try {
       await axios.patch(
-        `http://localhost:5000/api/repositories/${id}/request-close`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/repositories/${id}/request-close`,
         { userId }
       );
 
@@ -167,7 +167,7 @@ export default function RepoView() {
   async function lockRepo() {
     if (!confirm("Lock this repository? This cannot be undone.")) return;
     try {
-      await axios.patch(`http://localhost:5000/api/repositories/${id}/lock`, {
+      await axios.patch(`${process.env.NEXT_PUBLIC_API_URL}/api/repositories/${id}/lock`, {
         adminId: userId
       });
       alert("Repository locked");
@@ -181,7 +181,7 @@ export default function RepoView() {
   async function submitQuery() {
     if (!newQuery.trim()) return alert("Enter a question");
     try {
-      await axios.post(`http://localhost:5000/api/repositories/${id}/query`, {
+      await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/repositories/${id}/query`, {
         userId,
         question: newQuery
       });
@@ -198,7 +198,7 @@ export default function RepoView() {
 
     try {
       await axios.post(
-        `http://localhost:5000/api/repositories/${id}/query/${index}/answer`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/repositories/${id}/query/${index}/answer`,
         { userId, answer: ans }
       );
       loadRepo();

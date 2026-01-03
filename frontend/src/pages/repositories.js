@@ -25,16 +25,16 @@ export default function Repositories() {
       if (role === "cl") {
         // CLIENT → show client repositories
         response = await axios.get(
-          `http://localhost:5000/api/repositories/by-client?userId=${uid}`
+          `${process.env.NEXT_PUBLIC_API_URL}/api/repositories/by-client?userId=${uid}`
         );
       } else if (role === "sp") {
         // SERVICE PROVIDER → show repos they created or collaborate on
         response = await axios.get(
-          `http://localhost:5000/api/repositories/by-sp?userId=${uid}`
+          `${process.env.NEXT_PUBLIC_API_URL}/api/repositories/by-sp?userId=${uid}`
         );
       } else if (role === "adm") {
         // ADMIN → see all repos
-        response = await axios.get("http://localhost:5000/api/repositories/all");
+        response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/repositories/all`);
       }
 
       setRepos(response.data.repos || []);
