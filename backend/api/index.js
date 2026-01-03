@@ -53,7 +53,8 @@ app.use(express.json());
    Routes
 ========================= */
 app.use("/api/auth", authRoutes);
-app.use("/api/repos", repoRoutes);
+// app.use("/api/repos", repoRoutes);
+app.use("/api/repositories", repoRoutes);
 app.use("/api/users", usersRoutes);
 app.use("/api/portfolio", portfolioRoutes);
 app.use("/api/posts", postsRouter);
@@ -70,3 +71,4 @@ app.get("/", (req, res) => {
 });
 console.log("MONGO_URI exists:", !!process.env.MONGO_URI);
 export default app;
+
