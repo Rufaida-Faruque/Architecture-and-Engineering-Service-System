@@ -88,7 +88,17 @@ router.post("/create", async (req, res) => {
     });
   }
 });
+router.get("/by-sp", async (req, res) => {
+  try {
+    const { userId } = req.query;
 
+    const repos = await Repository.find({ createdBy: userId });
+
+    res.json({ repos });
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
 router.get("/by-client", async (req, res) => {
   try {
     const { userId } = req.query;
@@ -102,16 +112,16 @@ router.get("/by-client", async (req, res) => {
 });
 
 
-// repositories created by SP
-router.get("/by-sp", async (req, res) => {
-  try {
-    const { userId } = req.query;
-    const repos = await Repository.find({ createdBy: userId });
-    res.json({ repos });
-  } catch (err) {
-    res.status(500).json({ message: "Server error" });
-  }
-});
+// // repositories created by SP
+// router.get("/by-sp", async (req, res) => {
+//   try {
+//     const { userId } = req.query;
+//     const repos = await Repository.find({ createdBy: userId });
+//     res.json({ repos });
+//   } catch (err) {
+//     res.status(500).json({ message: "Server error" });
+//   }
+// });
 
 // repositories where SP is collaborator
 router.get("/by-collaborator", async (req, res) => {
@@ -531,4 +541,3 @@ router.patch("/:id/request-close", async (req, res) => {
 
 
 export default router;
-
