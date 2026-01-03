@@ -110,22 +110,37 @@ router.get("/by-client", async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
-router.get("/:id", async (req, res) => {
+
+
+// repositories created by SP
+router.get("/by-sp", async (req, res) => {
   try {
-    const repo = await Repository.findById(req.params.id)
-      .populate("createdBy", "email role")
-      .populate("clients", "email role")
-      .populate("collaborators", "email role");
-
-    if (!repo) return res.status(404).json({ message: "Repository not found" });
-
-    res.json({ repo });
+    const { userId } = req.query;
+    const repos = await Repository.find({ createdBy: userId });
+    res.json({ repos });
   } catch (err) {
-    console.error("ERROR FETCHING REPO:", err);
     res.status(500).json({ message: "Server error" });
   }
 });
 
+// repositories where SP is collaborator
+router.get("/by-collaborator", async (req, res) => {
+  try {
+    const { userId } = req.query;
+
+    if (!userId)
+      return res.status(400).json({ message: "userId required" });
+
+    const repos = await Repository.find({
+      collaborators: { $in: [userId] }
+    });
+
+    res.json({ repos });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
 
 // UPDATE REPOSITORY
 router.put("/:id", async (req, res) => {
@@ -168,6 +183,22 @@ router.post("/:id/query", async (req, res) => {
   }
 });
 
+
+router.get("/:id", async (req, res) => {
+  try {
+    const repo = await Repository.findById(req.params.id)
+      .populate("createdBy", "email role")
+      .populate("clients", "email role")
+      .populate("collaborators", "email role");
+
+    if (!repo) return res.status(404).json({ message: "Repository not found" });
+
+    res.json({ repo });
+  } catch (err) {
+    console.error("ERROR FETCHING REPO:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
 
 router.post("/:id/query/:qIndex/answer", async (req, res) => {
   try {
@@ -499,6 +530,7 @@ router.patch("/:id/request-close", async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
+
 
 
 
