@@ -11,13 +11,13 @@ export default function EditRepository() {
   useEffect(() => {
     if (!id) return;
 
-    axios.get(`http://localhost:5000/api/repositories/${id}`)
+    axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/repositories/${id}`)
       .then(res => setRepo(res.data.repo));
   }, [id]);
 
   const handleSave = async () => {
     try {
-      await axios.put(`http://localhost:5000/api/repositories/${id}`, repo);
+      await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/api/repositories/${id}`, repo);
       alert("Repository updated!");
       router.push(`/repositories/${id}`);
     } catch (err) {

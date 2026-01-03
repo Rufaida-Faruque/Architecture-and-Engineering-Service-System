@@ -1,0 +1,71 @@
+/* Overall container for the page */
+.register-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(to bottom, #6baed6, #e0e0e0); /* Blue to bluish-ash gradient */
+  font-family: 'Arial', sans-serif;
+  color: #333;
+  padding: 20px;
+  flex-direction: column; /* Stack items vertically */
+  text-align: center; /* Center align the content */
+}
+
+/* Register title */
+.register-title {
+  font-size: 36px;
+  color: #2c3e50;
+  margin-bottom: 20px; /* Space between title and form */
+}
+
+/* Form container */
+.register-form {
+  background-color: #ffffff;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+}
+
+/* Input fields and select dropdown */
+.register-input {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+  color: #333;
+}
+
+.register-input:focus {
+  border-color: #5c6bc0; /* Light blue color when focused */
+  outline: none;
+}
+
+/* Submit button */
+.register-button {
+  width: 100%;
+  padding: 12px;
+  background-color: #3b8ad9; /* Blue */
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  font-size: 18px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.register-button:hover {
+  background-color: #2a7ac7; /* Darker blue on hover */
+}
+
+/* Error message */
+.error-message {
+  color: red;
+  font-size: 14px;
+  margin-top: 10px;
+}

@@ -77,7 +77,7 @@ export default function NewRepo() {
 
     try {
       await axios.post(
-        "http://localhost:5000/api/repositories/create",
+        `${process.env.NEXT_PUBLIC_API_URL}/api/repositories/create`,
         payload
       );
 

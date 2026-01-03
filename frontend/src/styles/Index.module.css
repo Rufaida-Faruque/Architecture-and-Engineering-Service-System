@@ -1,0 +1,44 @@
+/* Container styling */
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
+  background-color: #f7fafc;
+}
+
+/* Main title */
+.title {
+  font-size: 2.5rem; /* roughly 40px */
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 20px;
+  color: #111827; /* dark gray */
+}
+
+/* Subtitle / description */
+.subtitle {
+  font-size: 1.125rem; /* roughly 18px */
+  text-align: center;
+  color: #4b5563; /* gray-700 */
+  margin-bottom: 30px;
+}
+
+/* Button styling */
+.continue-button {
+  padding: 12px 24px;
+  background-color: #2563eb; /* blue-600 */
+  color: white;
+  font-weight: 600;
+  border: none;
+  border-radius: 0.5rem; /* 8px */
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.2s ease-in-out;
+}
+
+.continue-button:hover {
+  background-color: #1d4ed8; /* blue-700 */
+}

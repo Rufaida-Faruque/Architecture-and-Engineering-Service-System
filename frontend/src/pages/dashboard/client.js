@@ -24,7 +24,7 @@ export default function ClientDashboard() {
     async function loadData() {
       try {
         /* ------ LOAD ALL REPOSITORIES ------ */
-        const repoRes = await axios.get("http://localhost:5000/api/repositories");
+        const repoRes = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/repositories`);
         const allRepos = repoRes.data.repos || repoRes.data || [];
         const clientRepos = allRepos.filter((r) =>
           r.clients?.some((c) => (c._id || c).toString() === userId)
@@ -34,7 +34,7 @@ export default function ClientDashboard() {
         /* -------------- POSTS -------------- */
         try {
           const p = await axios.get(
-            `http://localhost:5000/api/posts/client/${userId}`
+            `${process.env.NEXT_PUBLIC_API_URL}/api/posts/client/${userId}`
           );
           setPosts(p.data || []);
         } catch {
@@ -44,7 +44,7 @@ export default function ClientDashboard() {
         /* ---------- BIDDING SESSIONS -------- */
         try {
           const b = await axios.get(
-            `http://localhost:5000/api/bidSessions/client/${userId}`
+            `${process.env.NEXT_PUBLIC_API_URL}/api/bidSessions/client/${userId}`
           );
           setBids(b.data || []);
         } catch {
